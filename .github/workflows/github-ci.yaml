@@ -39,7 +39,7 @@ jobs:
         poetry install
 
     - name: Run test
-      run: pytest -vv
+      run: poetry run pytest -vv
 
   codestyle:
     name: Check code style issues
