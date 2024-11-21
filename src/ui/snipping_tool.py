@@ -132,10 +132,11 @@ class TkinterSnippingTool(SnippingToolBase):
     def on_button_release(self, event: tk.Event) -> None:
         """Process screenshot after selection"""
         try:
-            x1: int = int(self.start_x + self.master_screen.winfo_x())
-            y1: int = int(self.start_y + self.master_screen.winfo_y())
-            x2: int = int(event.x + self.master_screen.winfo_x())
-            y2: int = int(event.y + self.master_screen.winfo_y())
+            # Calculate the coordinates relative to the screen
+            x1: int = int(self.start_x)
+            y1: int = int(self.start_y)
+            x2: int = int(self.snip_surface.canvasx(event.x))
+            y2: int = int(self.snip_surface.canvasy(event.y))
 
             left: int = min(x1, x2)
             top: int = min(y1, y2)
@@ -149,6 +150,8 @@ class TkinterSnippingTool(SnippingToolBase):
                     left, top, width, height
                 )
             )
+            # if screenshot:
+            #     screenshot.show()  # Display the screenshot for debugging
             self.process_screenshot(screenshot)
             self.exit_program()
         except Exception as e:

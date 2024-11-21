@@ -26,7 +26,13 @@ class QRCodeProcessor:
             return None, False
 
         try:
-            image_cv: np.ndarray = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+            # Ensure image is in correct format
+            if isinstance(image, Image.Image):
+                image_cv: np.ndarray = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+            else:
+                image_cv: np.ndarray = image
+
+            logger.debug("Starting QR code detection")
             detector: cv2.QRCodeDetector = cv2.QRCodeDetector()
             data, bbox, _ = detector.detectAndDecode(image_cv)
 
