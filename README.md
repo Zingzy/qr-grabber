@@ -7,7 +7,7 @@
 
 <p align="center">
     <a href="#-features"><kbd>🔥 Features</kbd></a>
-    <a href="#-installation"><kbd>⚒️ Installation</kbd></a>
+    <a href="#%EF%B8%8F-installation"><kbd>⚒️ Installation</kbd></a>
     <a href="#-visuals"><kbd>👀 Visuals</kbd></a>
     <a href="#%EF%B8%8F-download-links" target="_blank"><kbd>⬇️ Download Links</kbd></a>
     <a href="">
@@ -19,6 +19,7 @@
 <img src="https://img.shields.io/github/last-commit/zingzy/qr-grabber?logo=github" alt="GitHub last commit">
 <img src="https://img.shields.io/github/commit-activity/m/zingzy/qr-grabber?logo=github" alt="GitHub commit activity">
 <img src="https://img.shields.io/github/issues/zingzy/qr-grabber?logo=github" alt="GitHub issues">
+<img src="https://img.shields.io/github/actions/workflow/status/zingzy/qr-grabber/github-ci.yaml" alt="Build Status">
 <a href="https://spoo.me/discord"><img src="https://img.shields.io/discord/1192388005206433892?logo=discord" alt="Discord"></a>
 </p>
 

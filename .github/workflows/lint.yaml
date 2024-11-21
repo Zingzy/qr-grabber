@@ -24,4 +24,6 @@ jobs:
           pip install ruff
 
       - name: Check Python File Formatting
-        run: ruff format --check
+        run: |
+          ruff format --check
+          run: ruff check
