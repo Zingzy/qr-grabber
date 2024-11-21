@@ -2,7 +2,7 @@
 name = "qr grabber"
 version = "0.1.0"
 description = "An application to grab and decode QR Codes from the screen quickly"
-authors = ["Zingzy admin@spoo.me"]
+authors = "Zingzy admin@spoo.me"
 license = "MIT"
 readme = "README.md"
 
