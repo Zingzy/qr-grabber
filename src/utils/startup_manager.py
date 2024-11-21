@@ -5,11 +5,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def get_app_path() -> str:
     """Get the path to the executable or script"""
-    if getattr(sys, 'frozen', False):
+    if getattr(sys, "frozen", False):
         return sys.executable
     return os.path.abspath(sys.argv[0])
+
 
 def set_startup_registry(enable: bool) -> bool:
     """Set or remove the application from Windows startup registry"""
@@ -19,7 +21,7 @@ def set_startup_registry(enable: bool) -> bool:
             winreg.HKEY_CURRENT_USER,
             r"Software\Microsoft\Windows\CurrentVersion\Run",
             0,
-            winreg.KEY_SET_VALUE | winreg.KEY_QUERY_VALUE
+            winreg.KEY_SET_VALUE | winreg.KEY_QUERY_VALUE,
         )
 
         if enable:
@@ -29,12 +31,13 @@ def set_startup_registry(enable: bool) -> bool:
                 winreg.DeleteValue(key, "QRGrabber")
             except FileNotFoundError:
                 pass
-        
+
         winreg.CloseKey(key)
         return True
     except Exception as e:
         logger.error(f"Failed to modify startup registry: {e}")
         return False
+
 
 def is_startup_enabled() -> bool:
     """Check if the application is set to run at startup"""
@@ -43,7 +46,7 @@ def is_startup_enabled() -> bool:
             winreg.HKEY_CURRENT_USER,
             r"Software\Microsoft\Windows\CurrentVersion\Run",
             0,
-            winreg.KEY_READ
+            winreg.KEY_READ,
         )
         try:
             winreg.QueryValueEx(key, "QRGrabber")
