@@ -171,7 +171,7 @@ class TkinterSnippingTool(SnippingToolBase):
                 except Exception as e:
                     logger.exception(f"Error copying data to clipboard: {e}")
 
-                sanitized_data = data[:200] + "..." if len(data) > 200 else data
+                sanitized_data = f"{data[:200]}..." if len(data) > 200 else data
                 try:
                     self.notification_service.show_notification(
                         "QR Code Detected",
