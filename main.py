@@ -6,6 +6,7 @@ from src.services.notification_service import NotificationService
 from src.ui.snipping_tool import TkinterSnippingTool
 from src.ui.tray_icon import TrayIconManager
 from src.utils.exceptions import handle_exception
+from src.utils.startup_manager import set_startup_registry, is_startup_enabled
 import threading
 import sys
 import keyboard
@@ -33,7 +34,9 @@ class QRCodeDetectionApp:
             self.notification_service,
         )
         self.tray_icon_manager: TrayIconManager = TrayIconManager(
-            self.snipping_tool.create_screen_canvas
+            self.snipping_tool.create_screen_canvas,
+            set_startup_registry,
+            is_startup_enabled,
         )
 
     def listen_for_shortcut(self) -> None:

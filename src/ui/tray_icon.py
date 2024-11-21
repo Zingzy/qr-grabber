@@ -3,22 +3,45 @@ import keyboard
 from pystray import Icon, Menu, MenuItem
 from PIL import Image, ImageFile
 from loguru import logger
-from typing import Any
+from typing import Any, Callable
 
 
 class TrayIconManager:
     """Manages system tray icon and menu"""
 
     def __init__(
-        self, open_snipping_tool_callback: callable, icon_path: str = "assets/icon.png"
+        self,
+        open_snipping_tool_callback: Callable,
+        set_startup_registry: Callable[[bool], bool],
+        is_startup_enabled: Callable[[], bool],
+        icon_path: str = "assets/icon.png",
     ) -> None:
         self.open_snipping_tool_callback = open_snipping_tool_callback
+        self.set_startup_registry = set_startup_registry
+        self.is_startup_enabled = is_startup_enabled
+        self.startup_enabled: bool = self.is_startup_enabled()
         self.tray_icon = None
         self.icon_path: str = icon_path
         self.stop_event: threading.Event = threading.Event()
 
     def create_tray_icon(self) -> None:
         """Create system tray icon with menu"""
+
+        def toggle_startup(icon, item) -> None:
+            """Toggle application startup on/off"""
+            try:
+                logger.info("Toggling application startup")
+                self.startup_enabled = not self.startup_enabled
+                success = self.set_startup_registry(self.startup_enabled)
+                if success:
+                    logger.info(
+                        f"Run at startup {'enabled' if self.startup_enabled else 'disabled'}"
+                    )
+                else:
+                    self.startup_enabled = not self.startup_enabled  # Revert if failed
+                    logger.error("Failed to modify startup settings")
+            except Exception as e:
+                logger.exception(f"Error toggling startup setting: {e}")
 
         def quit_app(icon, item: Any) -> None:
             """Graceful application exit"""
@@ -52,6 +75,11 @@ class TrayIconManager:
         try:
             menu: Menu = Menu(
                 MenuItem("Open Detection Tool", open_snipping_tool),
+                MenuItem(
+                    "Run at Startup",
+                    toggle_startup,
+                    checked=lambda item: self.startup_enabled,
+                ),
                 MenuItem("Quit", quit_app),
             )
 
