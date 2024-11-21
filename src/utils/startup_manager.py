@@ -25,7 +25,8 @@ def set_startup_registry(enable: bool) -> bool:
         )
 
         if enable:
-            winreg.SetValueEx(key, "QRGrabber", 0, winreg.REG_SZ, f'"{app_path}"')
+            escaped_path = app_path.strip('"')  # Remove existing quotes if present
+            winreg.SetValueEx(key, "QRGrabber", 0, winreg.REG_SZ, f'"{escaped_path}"')
         else:
             try:
                 winreg.DeleteValue(key, "QRGrabber")
