@@ -196,5 +196,5 @@ def test_long_qr_code_data_truncation(snipping_tool, mock_dependencies):
     # Verify data is truncated
     mock_notification_service.show_notification.assert_called_with(
         "QR Code Detected",
-        "QR Code data copied to clipboard:\n\n" + (long_data[:200] + "..."),
+        "QR Code data copied to clipboard:\n\n" + f"{long_data[:200]}...",
     )
