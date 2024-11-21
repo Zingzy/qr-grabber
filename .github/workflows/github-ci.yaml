@@ -34,7 +34,7 @@ jobs:
     - name: Upgrade pip
       run: python -m pip install --upgrade pip
     - name: Install requirements (Python 3)
-      run: pip install pytest pytest-cov pillow
+      run: pip install pytest pytest-cov pillow loguru
 
     - name: Run test
       run: pytest -vv
