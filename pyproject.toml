@@ -2,12 +2,12 @@
 name = "qr grabber"
 version = "0.1.0"
 description = "An application to grab and decode QR Codes from the screen quickly"
-authors = ["Zingzy admin@spoo.me"]
+authors = ["Zingzy <admin@spoo.me>"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.9"
 pillow = "^11.0.0"
 pyperclip = "^1.9.0"
 plyer = "^2.1.0"
@@ -17,6 +17,7 @@ pyautogui = "^0.9.54"
 pystray = "^0.19.5"
 loguru = "^0.7.2"
 opencv-python = "^4.10.0.84"
+pytest = "^8.3.3"
 
 
 [build-system]

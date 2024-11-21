@@ -166,13 +166,26 @@ class TkinterSnippingTool(SnippingToolBase):
             data, success = self.qr_processor.detect_qr_code(image)
 
             if success and data:
-                self.clipboard_service.copy_to_clipboard(data)
-                self.notification_service.show_notification(
-                    "QR Code Detected", f"QR Code data copied to clipboard:\n\n{data}"
-                )
+                try:
+                    self.clipboard_service.copy_to_clipboard(data)
+                except Exception as e:
+                    logger.exception(f"Error copying data to clipboard: {e}")
+
+                sanitized_data = f"{data[:200]}..." if len(data) > 200 else data
+                try:
+                    self.notification_service.show_notification(
+                        "QR Code Detected",
+                        f"QR Code data copied to clipboard:\n\n{sanitized_data}",
+                    )
+                except Exception as e:
+                    logger.exception(f"Error showing notification: {e}")
             else:
-                self.notification_service.show_notification(
-                    "No QR Code Detected", "No QR Code was detected in the screenshot."
-                )
+                try:
+                    self.notification_service.show_notification(
+                        "No QR Code Detected",
+                        "No QR Code was detected in the screenshot.",
+                    )
+                except Exception as e:
+                    logger.exception(f"Error showing notification: {e}")
         except Exception as e:
             logger.exception(f"Error processing screenshot: {e}")
