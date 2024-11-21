@@ -45,7 +45,7 @@ jobs:
       run: |
         sudo Xvfb :99 -ac &
         export DISPLAY=:99
-        poetry run pytest -vv
+        pytest -vv
 
   codestyle:
     name: Check code style issues
