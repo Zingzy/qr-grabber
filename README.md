@@ -73,7 +73,7 @@ QR Grabber is a Python application designed to quickly capture and decode QR cod
 
 ## 🙏 Acknowledgements
 
-- [OpenCV](https://opencv.org/) for QR code detection.
+- [pyzbar](https://github.com/NaturalHistoryMuseum/pyzbar/) for QR code detection.
 - [Tkinter](https://docs.python.org/3/library/tkinter.html) for the user interface.
 - [Loguru](https://github.com/Delgan/loguru) for logging.
 
