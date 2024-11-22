@@ -27,6 +27,5 @@ pytest==8.3.3
 pytweening==1.2.0
 qrcode==8.0
 six==1.16.0
-tox==4.23.2
 virtualenv==20.27.1
 win32-setctime==1.1.0
