@@ -43,6 +43,7 @@ class TkinterSnippingTool(SnippingToolBase):
         self.current_y: Optional[int] = None
         self.rect: Optional[int] = None
         self.is_window_open: bool = False
+        self.cursor_moved: bool = False
 
         # Dependency injection
         self.qr_processor: QRCodeProcessor = qr_processor
@@ -106,6 +107,7 @@ class TkinterSnippingTool(SnippingToolBase):
         """Handle mouse button press for selecting screenshot area"""
         try:
             logger.debug("Button press detected for screenshot selection")
+            self.cursor_moved = False
             self.start_x = self.snip_surface.canvasx(event.x)
             self.start_y = self.snip_surface.canvasy(event.y)
             self.rect = self.snip_surface.create_rectangle(
@@ -123,6 +125,7 @@ class TkinterSnippingTool(SnippingToolBase):
     def on_snip_drag(self, event: tk.Event) -> None:
         """Update rectangle during mouse drag"""
         try:
+            self.cursor_moved = True
             self.current_x, self.current_y = (event.x, event.y)
             self.snip_surface.coords(
                 self.rect, self.start_x, self.start_y, self.current_x, self.current_y
@@ -146,15 +149,24 @@ class TkinterSnippingTool(SnippingToolBase):
 
             logger.info(f"Screenshot selection: {left},{top} {width}x{height}")
 
-            screenshot: Optional[Image.Image] = (
-                self.screenshot_service.take_bounded_screenshot(
-                    left, top, width, height
+            if not (width < 40 or height < 40):
+                screenshot: Optional[Image.Image] = (
+                    self.screenshot_service.take_bounded_screenshot(
+                        left, top, width, height
+                    )
                 )
-            )
-            # if screenshot:
-            #     screenshot.show()  # Display the screenshot for debugging
-            self.exit_program()
-            self.process_screenshot(screenshot)
+                # if screenshot:
+                #     screenshot.show()  # Display the screenshot for debugging
+                self.exit_program()
+                self.process_screenshot(screenshot)
+            else:
+                if self.cursor_moved:
+                    self.snip_surface.delete("all")
+                    logger.info("The selected area is too small")
+                else:
+                    # Close if the user only clicks and doesn't select anything.
+                    logger.info("No selection made, closing")
+                    self.exit_program()
         except Exception as e:
             logger.exception(f"Error during button release: {e}")
             self.exit_program()
