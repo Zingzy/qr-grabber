@@ -10,6 +10,7 @@ from src.utils.startup_manager import set_startup_registry, is_startup_enabled
 import threading
 import sys
 import keyboard
+import os
 
 # Setup logging at module import
 logger = setup_logging()
@@ -24,7 +25,9 @@ class QRCodeDetectionApp:
         self.screenshot_service: ScreenshotCapture = ScreenshotCapture()
         self.qr_processor: QRCodeProcessor = QRCodeProcessor()
         self.clipboard_service: ClipboardService = ClipboardService()
-        self.notification_service: NotificationService = NotificationService()
+        self.notification_service: NotificationService = NotificationService(
+            app_icon=self.get_asset_path("assets/icon.ico")
+        )
 
         # Create components
         self.snipping_tool: TkinterSnippingTool = TkinterSnippingTool(
@@ -37,6 +40,7 @@ class QRCodeDetectionApp:
             self.snipping_tool.create_screen_canvas,
             set_startup_registry,
             is_startup_enabled,
+            self.get_asset_path("assets/icon.ico"),
         )
 
     def listen_for_shortcut(self) -> None:
@@ -50,6 +54,14 @@ class QRCodeDetectionApp:
             self.tray_icon_manager.create_tray_icon()
         except Exception as e:
             logger.exception(f"Error setting up application: {e}")
+
+    def get_asset_path(self, relative_path):
+        """Get the absolute path to an asset, handling PyInstaller paths."""
+        if getattr(sys, "frozen", False):  # If running as a PyInstaller EXE
+            base_path = sys._MEIPASS
+        else:  # If running in development
+            base_path = os.path.dirname(__file__)
+        return os.path.join(base_path, relative_path)
 
     def run(self) -> None:
         """Start the application"""

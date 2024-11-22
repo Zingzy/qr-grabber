@@ -91,6 +91,7 @@ class TkinterSnippingTool(SnippingToolBase):
             self.master_screen.focus_force()  # Force focus on the window
 
             self.master_screen.attributes("-fullscreen", True)
+            self.master_screen.attributes("-toolwindow", True)
             self.master_screen.attributes("-alpha", 0.3)
             self.master_screen.lift()
             self.master_screen.attributes("-topmost", True)
@@ -152,8 +153,8 @@ class TkinterSnippingTool(SnippingToolBase):
             )
             # if screenshot:
             #     screenshot.show()  # Display the screenshot for debugging
-            self.process_screenshot(screenshot)
             self.exit_program()
+            self.process_screenshot(screenshot)
         except Exception as e:
             logger.exception(f"Error during button release: {e}")
             self.exit_program()

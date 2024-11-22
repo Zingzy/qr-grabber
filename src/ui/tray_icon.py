@@ -14,7 +14,7 @@ class TrayIconManager:
         open_snipping_tool_callback: Callable,
         set_startup_registry: Callable[[bool], bool],
         is_startup_enabled: Callable[[], bool],
-        icon_path: str = "assets/icon.png",
+        icon_path: str,
     ) -> None:
         self.open_snipping_tool_callback = open_snipping_tool_callback
         self.set_startup_registry = set_startup_registry
