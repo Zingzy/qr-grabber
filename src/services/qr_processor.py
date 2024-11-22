@@ -1,5 +1,6 @@
 try:
     from pyzbar.pyzbar import decode, ZBarSymbol
+    from pyzbar.pyzbar_error import PyZbarError  # Import specific exception
 except FileNotFoundError:
     import sys
     from loguru import logger
@@ -48,10 +49,19 @@ class QRCodeProcessor:
 
         try:
             if isinstance(image, str):
-                image = Image.open(image)
+                try:
+                    with Image.open(image) as img:
+                        image = img.copy()
+                except IOError as e:
+                    logger.error(f"Error opening image file: {e}")
+                    return None, False
 
             logger.debug("Starting QR code detection")
-            decoded_objects = decode(image, symbols=[ZBarSymbol.QRCODE])
+            try:
+                decoded_objects = decode(image, symbols=[ZBarSymbol.QRCODE])
+            except PyZbarError as e:
+                logger.error(f"Error decoding QR code: {e}")
+                return None, False
 
             if decoded_objects:
                 data = decoded_objects[0].data.decode("utf-8")
