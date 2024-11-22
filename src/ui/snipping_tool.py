@@ -4,11 +4,22 @@ from PIL import Image
 from loguru import logger
 from typing import Optional
 import abc
+import os
+import sys
 
 from src.services.qr_processor import QRCodeProcessor
 from src.services.screenshot_service import ScreenshotCapture
 from src.services.clipboard_service import ClipboardService
 from src.services.notification_service import NotificationService
+
+
+def get_asset_path(relative_path):
+    """Get the absolute path to an asset, handling PyInstaller paths."""
+    if getattr(sys, "frozen", False):  # If running as a PyInstaller EXE
+        base_path = sys._MEIPASS
+    else:  # If running in development
+        base_path = os.path.dirname(__file__)
+    return os.path.join(base_path, relative_path)
 
 
 class SnippingToolBase:
@@ -74,6 +85,8 @@ class TkinterSnippingTool(SnippingToolBase):
             logger.info("Opening snipping tool")
             self.is_window_open = True
             self.master_screen = Tk()
+            self.master_screen.title("qr-grabber")
+            self.master_screen.iconbitmap(get_asset_path("../../assets/icon.ico"))
             self.master_screen.attributes("-transparent", "blue")
             self.master_screen.geometry(
                 f"{self.master_screen.winfo_screenwidth()}x{self.master_screen.winfo_screenheight()}+0+0"
