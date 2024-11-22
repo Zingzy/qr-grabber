@@ -12,12 +12,11 @@ pillow = "^11.0.0"
 pyperclip = "^1.9.0"
 plyer = "^2.1.0"
 keyboard = "^0.13.5"
-opencv-python-headless = "^4.10.0.84"
 pyautogui = "^0.9.54"
 pystray = "^0.19.5"
 loguru = "^0.7.2"
-opencv-python = "^4.10.0.84"
 pytest = "^8.3.3"
+pyzbar = "^0.1.9"
 
 
 [build-system]
