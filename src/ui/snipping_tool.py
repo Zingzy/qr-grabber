@@ -85,7 +85,7 @@ class TkinterSnippingTool(SnippingToolBase):
             logger.info("Opening snipping tool")
             self.is_window_open = True
             self.master_screen = Tk()
-            self.master_screen.title("qr-grabber")
+            self.master_screen.title("QR Grabber Overlay")
 
             app_icon = PhotoImage(file=get_asset_path("../../assets/icon.png"))
             self.master_screen.iconphoto(True, app_icon)
