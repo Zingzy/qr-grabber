@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import Tk, Canvas
+from tkinter import Tk, Canvas, PhotoImage
 from PIL import Image
 from loguru import logger
 from typing import Optional
@@ -86,7 +86,10 @@ class TkinterSnippingTool(SnippingToolBase):
             self.is_window_open = True
             self.master_screen = Tk()
             self.master_screen.title("qr-grabber")
-            self.master_screen.iconbitmap(get_asset_path("../../assets/icon.ico"))
+
+            app_icon = PhotoImage(file = get_asset_path("../../assets/icon.png"))
+            self.master_screen.iconphoto(True, app_icon)
+            
             self.master_screen.attributes("-transparent", "blue")
             self.master_screen.geometry(
                 f"{self.master_screen.winfo_screenwidth()}x{self.master_screen.winfo_screenheight()}+0+0"
