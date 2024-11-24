@@ -87,7 +87,7 @@ class TkinterSnippingTool(SnippingToolBase):
             self.master_screen = Tk()
             self.master_screen.title("qr-grabber")
 
-            app_icon = PhotoImage(file = get_asset_path("../../assets/icon.png"))
+            app_icon = PhotoImage(file=get_asset_path("../../assets/icon.png"))
             self.master_screen.iconphoto(True, app_icon)
             
             self.master_screen.attributes("-transparent", "blue")
@@ -97,7 +97,7 @@ class TkinterSnippingTool(SnippingToolBase):
             self.master_screen.attributes("-alpha", 0.5)
             self.master_screen.attributes("-topmost", True)
 
-            self.snip_surface = Canvas(self.master_screen, cursor="cross", bg="grey18")
+            self.snip_surface = Canvas(self.master_screen, cursor="crosshair", bg="grey18")
             self.snip_surface.pack(fill=tk.BOTH, expand=tk.YES)
 
             self.snip_surface.bind("<ButtonPress-1>", self.on_button_press)
