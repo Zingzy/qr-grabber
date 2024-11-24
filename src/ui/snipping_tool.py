@@ -94,8 +94,6 @@ class TkinterSnippingTool(SnippingToolBase):
             self.master_screen.geometry(
                 f"{self.master_screen.winfo_screenwidth()}x{self.master_screen.winfo_screenheight()}+0+0"
             )
-            self.master_screen.attributes("-alpha", 0.5)
-            self.master_screen.attributes("-topmost", True)
 
             self.snip_surface = Canvas(self.master_screen, cursor="crosshair", bg="grey18")
             self.snip_surface.pack(fill=tk.BOTH, expand=tk.YES)
@@ -105,13 +103,11 @@ class TkinterSnippingTool(SnippingToolBase):
             self.snip_surface.bind("<ButtonRelease-1>", self.on_button_release)
             self.snip_surface.bind("<Escape>", self.exit_program)
             self.master_screen.bind("<Escape>", self.exit_program)
-            self.master_screen.focus_force()  # Force focus on the window
 
             self.master_screen.attributes("-fullscreen", True)
-            self.master_screen.attributes("-toolwindow", True)
             self.master_screen.attributes("-alpha", 0.3)
-            self.master_screen.lift()
             self.master_screen.attributes("-topmost", True)
+            self.master_screen.focus_force()  # Force focus on the window
 
             self.master_screen.protocol("WM_DELETE_WINDOW", self.exit_program)
             self.master_screen.mainloop()
