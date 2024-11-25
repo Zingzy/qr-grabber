@@ -61,6 +61,19 @@ QR Grabber is a Python application designed to quickly capture and decode QR cod
 3. Select the area of the screen containing the QR code.
 4. The decoded data will be copied to your clipboard automatically.
 
+## ⬇️ Download Links
+
+<table>
+  <tr>
+    <td width="70%">
+      <b>The stable version of the app is available at Github Releases.</b>
+    </td>
+    <td width="30%">
+      <a href="https://github.com/Zingzy/qr-grabber/releases/latest"><img src="https://i.imgur.com/ydZp1wW.png"/></a>
+    </td>
+  </tr>
+</table>
+
 ## 🤝 Contributing
 
 **Contributions are always welcome!** 🎉 Here's how you can contribute:
