@@ -6,6 +6,7 @@ from typing import Optional
 import abc
 import os
 import sys
+import time
 
 from src.services.qr_processor import QRCodeProcessor
 from src.services.screenshot_service import ScreenshotCapture
@@ -68,6 +69,17 @@ class TkinterSnippingTool(SnippingToolBase):
         try:
             if self.master_screen and self.master_screen.winfo_exists():
                 self.is_window_open = False
+
+                # Animate window
+                alpha = 0.3
+        
+                while alpha >= 0:
+                    alpha -= 0.01
+                    self.master_screen.wm_attributes("-alpha", alpha)
+                    self.master_screen.update()
+
+                    time.sleep(0.01)
+
                 self.master_screen.withdraw()
                 logger.info("Snipping tool closed successfully")
         except Exception as e:
@@ -117,7 +129,19 @@ class TkinterSnippingTool(SnippingToolBase):
 
     def show(self) -> None:
         """Show the window when needed"""
+
+        self.master_screen.wm_attributes("-alpha", 0)
         self.master_screen.deiconify()
+
+        # Animate window
+        alpha = 0
+
+        while alpha <= 0.3:
+            alpha += 0.01
+            self.master_screen.wm_attributes("-alpha", alpha)
+            self.master_screen.update()
+
+            time.sleep(0.01)
 
     def on_button_press(self, event: tk.Event) -> None:
         """Handle mouse button press for selecting screenshot area"""
