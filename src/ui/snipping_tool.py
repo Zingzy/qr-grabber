@@ -129,7 +129,10 @@ class TkinterSnippingTool(SnippingToolBase):
 
     def show_window(self) -> None:
         """Show the snipping tool window when needed"""
-        
+
+        # Clear canvas
+        self.snip_surface.delete("all")
+
         self.master_screen.wm_attributes("-alpha", 0)
         self.master_screen.deiconify()
 
