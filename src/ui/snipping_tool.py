@@ -65,7 +65,7 @@ class TkinterSnippingTool(SnippingToolBase):
 
     def hide_window(self, event: tk.Event = None) -> None:
         """Hide the snipping tool window"""
-        logger.debug("Attempting to hide snipping tool window")
+        logger.debug("Attempting to hide the snipping tool window")
         try:
             if self.master_screen and self.master_screen.winfo_exists():
                 self.is_window_open = False
@@ -81,7 +81,7 @@ class TkinterSnippingTool(SnippingToolBase):
                     time.sleep(0.01)
 
                 self.master_screen.withdraw()
-                logger.info("Snipping tool window hidden successfully")
+                logger.info("Snipping tool window successfully hidden")
         except Exception as e:
             logger.exception(f"Error hiding snipping tool window: {e}")
         finally:
@@ -128,6 +128,7 @@ class TkinterSnippingTool(SnippingToolBase):
 
     def show_window(self) -> None:
         """Show the snipping tool window when needed"""
+        logger.debug("Attempting to show the snipping tool window")
 
         # Clear canvas
         self.snip_surface.delete("all")
@@ -144,6 +145,8 @@ class TkinterSnippingTool(SnippingToolBase):
             self.master_screen.update()
 
             time.sleep(0.01)
+
+        logger.info("Snipping tool window successfully displayed")
 
     def on_button_press(self, event: tk.Event) -> None:
         """Handle mouse button press for selecting screenshot area"""
@@ -204,10 +207,10 @@ class TkinterSnippingTool(SnippingToolBase):
             else:
                 if self.cursor_moved:
                     self.snip_surface.delete("all")
-                    logger.info("The selected area is too small")
+                    logger.warning("The selected area is too small")
                 else:
                     # Close if the user only clicks and doesn't select anything.
-                    logger.info("No selection made, closing")
+                    logger.warning("No selection made, closing")
                     self.hide_window()
         except Exception as e:
             logger.exception(f"Error during button release: {e}")
