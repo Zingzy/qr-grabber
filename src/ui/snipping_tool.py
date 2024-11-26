@@ -26,7 +26,7 @@ class SnippingToolBase:
     """Abstract base class for snipping tool"""
 
     @abc.abstractmethod
-    def create_screen_canvas(self) -> None:
+    def initialize(self) -> None:
         """Create screen canvas for screenshot selection"""
         pass
 
@@ -68,14 +68,14 @@ class TkinterSnippingTool(SnippingToolBase):
         try:
             if self.master_screen and self.master_screen.winfo_exists():
                 self.is_window_open = False
-                self.master_screen.destroy()
+                self.master_screen.withdraw()
                 logger.info("Snipping tool closed successfully")
         except Exception as e:
             logger.exception(f"Error closing snipping tool: {e}")
         finally:
             self.is_window_open = False
 
-    def create_screen_canvas(self) -> None:
+    def initialize(self) -> None:
         """Create a fullscreen canvas for screenshot selection"""
         if self.is_window_open:
             logger.warning("Snipping tool already open")
@@ -107,13 +107,17 @@ class TkinterSnippingTool(SnippingToolBase):
             self.master_screen.attributes("-fullscreen", True)
             self.master_screen.attributes("-alpha", 0.3)
             self.master_screen.attributes("-topmost", True)
-            self.master_screen.focus_force()  # Force focus on the window
+            self.master_screen.withdraw()
 
             self.master_screen.protocol("WM_DELETE_WINDOW", self.exit_program)
             self.master_screen.mainloop()
         except Exception as e:
             logger.exception(f"Error creating screen canvas: {e}")
             self.is_window_open = False
+
+    def show(self) -> None:
+        """Show the window when needed"""
+        self.master_screen.deiconify()
 
     def on_button_press(self, event: tk.Event) -> None:
         """Handle mouse button press for selecting screenshot area"""

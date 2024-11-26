@@ -37,17 +37,20 @@ class QRCodeDetectionApp:
             self.notification_service,
         )
         self.tray_icon_manager: TrayIconManager = TrayIconManager(
-            self.snipping_tool.create_screen_canvas,
+            self.snipping_tool.show,
             set_startup_registry,
             is_startup_enabled,
             self.get_asset_path("assets/icon.ico"),
         )
 
+        snipping_tool_thread = threading.Thread(target=self.snipping_tool.initialize, daemon=True)
+        snipping_tool_thread.start()
+
     def listen_for_shortcut(self) -> None:
         """Set up keyboard shortcut and launch tray icon"""
         try:
             # Add keyboard shortcut
-            keyboard.add_hotkey("ctrl+alt+q", self.snipping_tool.create_screen_canvas)
+            keyboard.add_hotkey("ctrl+alt+q", self.snipping_tool.show)
             logger.info("Keyboard shortcut Ctrl+Alt+Q registered")
 
             # Create and run tray icon
@@ -68,8 +71,7 @@ class QRCodeDetectionApp:
         try:
             logger.info("Starting QR Code Detection Application")
             # Create a thread for keyboard and tray icon
-            tray_thread = threading.Thread(target=self.listen_for_shortcut)
-            tray_thread.daemon = True
+            tray_thread = threading.Thread(target=self.listen_for_shortcut, daemon=True)
             tray_thread.start()
 
             # Wait for stop event instead of thread join
