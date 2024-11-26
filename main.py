@@ -37,7 +37,7 @@ class QRCodeDetectionApp:
             self.notification_service,
         )
         self.tray_icon_manager: TrayIconManager = TrayIconManager(
-            self.snipping_tool.show,
+            self.snipping_tool.show_window,
             set_startup_registry,
             is_startup_enabled,
             self.get_asset_path("assets/icon.ico"),
@@ -50,7 +50,7 @@ class QRCodeDetectionApp:
         """Set up keyboard shortcut and launch tray icon"""
         try:
             # Add keyboard shortcut
-            keyboard.add_hotkey("ctrl+alt+q", self.snipping_tool.show)
+            keyboard.add_hotkey("ctrl+alt+q", self.snipping_tool.show_window)
             logger.info("Keyboard shortcut Ctrl+Alt+Q registered")
 
             # Create and run tray icon

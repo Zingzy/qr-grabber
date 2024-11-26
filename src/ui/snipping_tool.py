@@ -32,7 +32,7 @@ class SnippingToolBase:
         pass
 
     @abc.abstractmethod
-    def exit_program(self) -> None:
+    def hide_window(self) -> None:
         """Exit the snipping tool"""
         pass
 
@@ -63,9 +63,9 @@ class TkinterSnippingTool(SnippingToolBase):
         self.clipboard_service: ClipboardService = clipboard_service
         self.notification_service: NotificationService = notification_service
 
-    def exit_program(self, event: tk.Event = None) -> None:
-        """Exit the snipping window"""
-        logger.debug("Attempting to exit snipping tool")
+    def hide_window(self, event: tk.Event = None) -> None:
+        """Hide the snipping tool window"""
+        logger.debug("Attempting to hide snipping tool window")
         try:
             if self.master_screen and self.master_screen.winfo_exists():
                 self.is_window_open = False
@@ -81,9 +81,9 @@ class TkinterSnippingTool(SnippingToolBase):
                     time.sleep(0.01)
 
                 self.master_screen.withdraw()
-                logger.info("Snipping tool closed successfully")
+                logger.info("Snipping tool window hidden successfully")
         except Exception as e:
-            logger.exception(f"Error closing snipping tool: {e}")
+            logger.exception(f"Error hiding snipping tool window: {e}")
         finally:
             self.is_window_open = False
 
@@ -94,7 +94,7 @@ class TkinterSnippingTool(SnippingToolBase):
             return
 
         try:
-            logger.info("Opening snipping tool")
+            logger.info("Initializing snipping tool window")
             self.is_window_open = True
             self.master_screen = Tk()
             self.master_screen.title("QR Grabber Overlay")
@@ -113,23 +113,23 @@ class TkinterSnippingTool(SnippingToolBase):
             self.snip_surface.bind("<ButtonPress-1>", self.on_button_press)
             self.snip_surface.bind("<B1-Motion>", self.on_snip_drag)
             self.snip_surface.bind("<ButtonRelease-1>", self.on_button_release)
-            self.snip_surface.bind("<Escape>", self.exit_program)
-            self.master_screen.bind("<Escape>", self.exit_program)
+            self.snip_surface.bind("<Escape>", self.hide_window)
+            self.master_screen.bind("<Escape>", self.hide_window)
 
             self.master_screen.attributes("-fullscreen", True)
             self.master_screen.attributes("-alpha", 0.3)
             self.master_screen.attributes("-topmost", True)
             self.master_screen.withdraw()
 
-            self.master_screen.protocol("WM_DELETE_WINDOW", self.exit_program)
+            self.master_screen.protocol("WM_DELETE_WINDOW", self.hide_window)
             self.master_screen.mainloop()
         except Exception as e:
             logger.exception(f"Error creating screen canvas: {e}")
             self.is_window_open = False
 
-    def show(self) -> None:
-        """Show the window when needed"""
-
+    def show_window(self) -> None:
+        """Show the snipping tool window when needed"""
+        
         self.master_screen.wm_attributes("-alpha", 0)
         self.master_screen.deiconify()
 
@@ -197,7 +197,7 @@ class TkinterSnippingTool(SnippingToolBase):
                 )
                 # if screenshot:
                 #     screenshot.show()  # Display the screenshot for debugging
-                self.exit_program()
+                self.hide_window()
                 self.process_screenshot(screenshot)
             else:
                 if self.cursor_moved:
@@ -206,10 +206,10 @@ class TkinterSnippingTool(SnippingToolBase):
                 else:
                     # Close if the user only clicks and doesn't select anything.
                     logger.info("No selection made, closing")
-                    self.exit_program()
+                    self.hide_window()
         except Exception as e:
             logger.exception(f"Error during button release: {e}")
-            self.exit_program()
+            self.hide_window()
 
     def process_screenshot(self, image: Optional[Image.Image]) -> None:
         """Process detected screenshot for QR code"""
