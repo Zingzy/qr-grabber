@@ -33,7 +33,7 @@ class SnippingToolBase:
 
     @abc.abstractmethod
     def hide_window(self) -> None:
-        """Exit the snipping tool"""
+        """Hide the snipping tool window"""
         pass
 
 
@@ -73,7 +73,7 @@ class TkinterSnippingTool(SnippingToolBase):
                 # Animate window
                 alpha = 0.3
         
-                while alpha >= 0:
+                while alpha > 0:
                     alpha -= 0.01
                     self.master_screen.wm_attributes("-alpha", alpha)
                     self.master_screen.update()
@@ -117,7 +117,6 @@ class TkinterSnippingTool(SnippingToolBase):
             self.master_screen.bind("<Escape>", self.hide_window)
 
             self.master_screen.attributes("-fullscreen", True)
-            self.master_screen.attributes("-alpha", 0.3)
             self.master_screen.attributes("-topmost", True)
             self.master_screen.withdraw()
 
@@ -139,7 +138,7 @@ class TkinterSnippingTool(SnippingToolBase):
         # Animate window
         alpha = 0
 
-        while alpha <= 0.3:
+        while alpha < 0.3:
             alpha += 0.01
             self.master_screen.wm_attributes("-alpha", alpha)
             self.master_screen.update()
