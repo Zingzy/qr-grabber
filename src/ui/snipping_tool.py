@@ -40,6 +40,8 @@ class SnippingToolBase:
 class TkinterSnippingTool(SnippingToolBase):
     """Tkinter-based implementation of snipping tool"""
 
+    is_window_open = False
+
     def __init__(
         self,
         qr_processor: QRCodeProcessor,
@@ -95,7 +97,6 @@ class TkinterSnippingTool(SnippingToolBase):
 
         try:
             logger.info("Initializing snipping tool window")
-            self.is_window_open = True
             self.master_screen = Tk()
             self.master_screen.title("QR Grabber Overlay")
 
@@ -124,14 +125,14 @@ class TkinterSnippingTool(SnippingToolBase):
             self.master_screen.mainloop()
         except Exception as e:
             logger.exception(f"Error creating screen canvas: {e}")
-            self.is_window_open = False
 
     def show_window(self) -> None:
         """Show the snipping tool window when needed"""
         logger.debug("Attempting to show the snipping tool window")
 
         # Clear canvas
-        self.snip_surface.delete("all")
+        try: self.snip_surface.delete("all")
+        except: pass
 
         self.master_screen.wm_attributes("-alpha", 0)
         self.master_screen.deiconify()
@@ -146,6 +147,7 @@ class TkinterSnippingTool(SnippingToolBase):
 
             time.sleep(0.01)
 
+        self.is_window_open = True
         logger.info("Snipping tool window successfully displayed")
 
     def on_button_press(self, event: tk.Event) -> None:
