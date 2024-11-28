@@ -131,8 +131,10 @@ class TkinterSnippingTool(SnippingToolBase):
         logger.debug("Attempting to show the snipping tool window")
 
         # Clear canvas
-        try: self.snip_surface.delete("all")
-        except Exception as e: logger.exception(f"Error clearing the `snip_surface` canvas: {e}")
+        try: 
+            self.snip_surface.delete("all")
+        except Exception as e: 
+            logger.exception(f"Error clearing the `snip_surface` canvas: {e}")
 
         self.master_screen.wm_attributes("-alpha", 0)
         self.master_screen.deiconify()
