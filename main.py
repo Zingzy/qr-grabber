@@ -43,14 +43,18 @@ class QRCodeDetectionApp:
             self.get_asset_path("assets/icon.ico"),
         )
 
-        snipping_tool_thread = threading.Thread(target=self.snipping_tool.initialize, daemon=True)
+        snipping_tool_thread = threading.Thread(
+            target=self.snipping_tool.initialize, daemon=True
+        )
         snipping_tool_thread.start()
 
     def listen_for_shortcut(self) -> None:
         """Set up keyboard shortcut and launch tray icon"""
         try:
             # Add keyboard shortcut
-            keyboard.add_hotkey("ctrl+alt+q", self.snipping_tool.show_window, suppress=True)
+            keyboard.add_hotkey(
+                "ctrl+alt+q", self.snipping_tool.show_window, suppress=True
+            )
             logger.info("Keyboard shortcut Ctrl+Alt+Q registered")
 
             # Create and run tray icon

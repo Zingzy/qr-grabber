@@ -50,6 +50,7 @@ def test_show_window(snipping_tool, mock_dependencies):
     assert snipping_tool.alpha == 0.3
     assert snipping_tool.is_window_open
 
+
 def test_hide_window(snipping_tool, mock_dependencies):
     """Test the hide_window method"""
     # Create a mock Tk window
@@ -64,6 +65,7 @@ def test_hide_window(snipping_tool, mock_dependencies):
     snipping_tool.master_screen.withdraw.assert_called_once()
     assert snipping_tool.alpha == 0
     assert not snipping_tool.is_window_open
+
 
 def test_hide_window_no_existing_window(snipping_tool):
     """Test hide_window when no window exists"""

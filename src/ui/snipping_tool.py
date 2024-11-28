@@ -82,7 +82,7 @@ class TkinterSnippingTool(SnippingToolBase):
 
                 self.alpha = 0
                 self.master_screen.wm_attributes("-alpha", self.alpha)
-                
+
                 self.master_screen.withdraw()
                 logger.info("Snipping tool window successfully hidden")
         except Exception as e:
@@ -103,13 +103,15 @@ class TkinterSnippingTool(SnippingToolBase):
 
             app_icon = PhotoImage(file=get_asset_path("../../assets/icon.png"))
             self.master_screen.iconphoto(True, app_icon)
-            
+
             self.master_screen.attributes("-transparent", "blue")
             self.master_screen.geometry(
                 f"{self.master_screen.winfo_screenwidth()}x{self.master_screen.winfo_screenheight()}+0+0"
             )
 
-            self.snip_surface = Canvas(self.master_screen, cursor="crosshair", bg="grey18")
+            self.snip_surface = Canvas(
+                self.master_screen, cursor="crosshair", bg="grey18"
+            )
             self.snip_surface.pack(fill=tk.BOTH, expand=tk.YES)
 
             self.snip_surface.bind("<ButtonPress-1>", self.on_button_press)
@@ -132,9 +134,9 @@ class TkinterSnippingTool(SnippingToolBase):
         logger.debug("Attempting to show the snipping tool window")
 
         # Clear canvas
-        try: 
+        try:
             self.snip_surface.delete("all")
-        except Exception as e: 
+        except Exception as e:
             logger.exception(f"Error clearing the `snip_surface` canvas: {e}")
 
         self.master_screen.wm_attributes("-alpha", 0)
