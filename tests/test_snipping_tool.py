@@ -61,7 +61,7 @@ def test_hide_window(snipping_tool, mock_dependencies):
 
     # Verify the window was withdrawn and in the right state
     assert snipping_tool.master_screen.update.call_count == int(0.3 / 0.01)
-    assert snipping_tool.master_screen.wm_attributes.call_count == int(0.3 / 0.01) + 1
+    assert snipping_tool.master_screen.wm_attributes.call_count == int(0.3 / 0.01)
     snipping_tool.master_screen.withdraw.assert_called_once()
     assert snipping_tool.alpha == 0
     assert not snipping_tool.is_window_open

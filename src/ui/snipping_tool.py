@@ -74,14 +74,11 @@ class TkinterSnippingTool(SnippingToolBase):
 
                 # Animate window
                 for i in range(1, int(0.3 / 0.01) + 1):
-                    self.alpha = 0.3 / i
+                    self.alpha = 0.01 * (30 - i)
                     self.master_screen.wm_attributes("-alpha", self.alpha)
                     self.master_screen.update()
 
                     time.sleep(0.01)
-
-                self.alpha = 0
-                self.master_screen.wm_attributes("-alpha", self.alpha)
 
                 self.master_screen.withdraw()
                 logger.info("Snipping tool window successfully hidden")
