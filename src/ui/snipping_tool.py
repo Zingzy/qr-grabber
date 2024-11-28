@@ -73,15 +73,16 @@ class TkinterSnippingTool(SnippingToolBase):
                 self.is_window_open = False
 
                 # Animate window
-                self.alpha = 0.3
-        
-                while self.alpha > 0:
-                    self.alpha -= 0.01
+                for i in range(1, int(0.3 / 0.01) + 1):
+                    self.alpha = 0.3 / i
                     self.master_screen.wm_attributes("-alpha", self.alpha)
                     self.master_screen.update()
 
                     time.sleep(0.01)
 
+                self.alpha = 0
+                self.master_screen.wm_attributes("-alpha", self.alpha)
+                
                 self.master_screen.withdraw()
                 logger.info("Snipping tool window successfully hidden")
         except Exception as e:
@@ -140,10 +141,8 @@ class TkinterSnippingTool(SnippingToolBase):
         self.master_screen.deiconify()
 
         # Animate window
-        self.alpha = 0
-
-        while self.alpha < 0.3:
-            self.alpha += 0.01
+        for i in range(1, int(0.3 / 0.01) + 1):
+            self.alpha = 0.01 * i
             self.master_screen.wm_attributes("-alpha", self.alpha)
             self.master_screen.update()
 
