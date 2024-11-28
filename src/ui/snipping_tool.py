@@ -73,11 +73,11 @@ class TkinterSnippingTool(SnippingToolBase):
                 self.is_window_open = False
 
                 # Animate window
-                alpha = 0.3
+                self.alpha = 0.3
         
-                while alpha > 0:
-                    alpha -= 0.01
-                    self.master_screen.wm_attributes("-alpha", alpha)
+                while self.alpha > 0:
+                    self.alpha -= 0.01
+                    self.master_screen.wm_attributes("-alpha", self.alpha)
                     self.master_screen.update()
 
                     time.sleep(0.01)
@@ -140,11 +140,11 @@ class TkinterSnippingTool(SnippingToolBase):
         self.master_screen.deiconify()
 
         # Animate window
-        alpha = 0
+        self.alpha = 0
 
-        while alpha < 0.3:
-            alpha += 0.01
-            self.master_screen.wm_attributes("-alpha", alpha)
+        while self.alpha < 0.3:
+            self.alpha += 0.01
+            self.master_screen.wm_attributes("-alpha", self.alpha)
             self.master_screen.update()
 
             time.sleep(0.01)
