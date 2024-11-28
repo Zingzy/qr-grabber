@@ -44,8 +44,6 @@ def test_show_window(snipping_tool, mock_dependencies):
     snipping_tool.show_window()
 
     # Verify the window was deiconified and in the right state
-
-    print(snipping_tool.master_screen.update.call_count)
     assert snipping_tool.master_screen.update.call_count == int(0.3 / 0.01)
     assert snipping_tool.master_screen.wm_attributes.call_count == int(0.3 / 0.01) + 1
     snipping_tool.master_screen.deiconify.assert_called_once()
