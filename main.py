@@ -43,6 +43,7 @@ class QRCodeDetectionApp:
             self.get_asset_path("assets/icon.ico"),
         )
 
+        # Initialize snipping tool window
         snipping_tool_thread = threading.Thread(
             target=self.snipping_tool.initialize, daemon=True
         )
