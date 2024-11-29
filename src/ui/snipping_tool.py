@@ -133,9 +133,9 @@ class TkinterSnippingTool(SnippingToolBase):
                 time.sleep(0.01)
 
             self.is_window_displayed = True
-            logger.info("The snipping tool window was successfully shown")
+            logger.info("Snipping tool window was successfully shown")
         else:
-            logger.warning("The snipping tool window is already shown")
+            logger.warning("Snipping tool window is already shown")
 
     def hide_window(self, event: tk.Event = None) -> None:
         """Hide the snipping tool window"""
@@ -155,13 +155,13 @@ class TkinterSnippingTool(SnippingToolBase):
                         time.sleep(0.01)
 
                     self.master_screen.withdraw()
-                    logger.info("The snipping tool window was successfully hidden")
+                    logger.info("Snipping tool window was successfully hidden")
             except Exception as e:
                 logger.exception(f"Error hiding the snipping tool window: {e}")
             finally:
                 self.is_window_displayed = False
         else:
-            logger.warning("The snipping tool window is already hidden")
+            logger.warning("Snipping tool window is already hidden")
 
     def on_button_press(self, event: tk.Event) -> None:
         """Handle mouse button press for selecting screenshot area"""
