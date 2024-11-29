@@ -40,7 +40,7 @@ class SnippingToolBase:
 class TkinterSnippingTool(SnippingToolBase):
     """Tkinter-based implementation of snipping tool"""
 
-    is_window_open = False
+    is_window_displayed = False
 
     # Animation configuration
     max_alpha = 0.3
@@ -61,7 +61,7 @@ class TkinterSnippingTool(SnippingToolBase):
         self.current_x: Optional[int] = None
         self.current_y: Optional[int] = None
         self.rect: Optional[int] = None
-        self.is_window_open: bool = False
+        self.is_window_displayed: bool = False
         self.cursor_moved: bool = False
 
         # Dependency injection
@@ -70,31 +70,9 @@ class TkinterSnippingTool(SnippingToolBase):
         self.clipboard_service: ClipboardService = clipboard_service
         self.notification_service: NotificationService = notification_service
 
-    def hide_window(self, event: tk.Event = None) -> None:
-        """Hide the snipping tool window"""
-        logger.debug("Attempting to hide the snipping tool window")
-        try:
-            if self.master_screen and self.master_screen.winfo_exists():
-                self.is_window_open = False
-
-                # Animate window
-                for i in range(1, self.alpha_cycles + 1):
-                    self.alpha = self.alpha_increment * (self.alpha_cycles - i)
-                    self.master_screen.wm_attributes("-alpha", self.alpha)
-                    self.master_screen.update()
-
-                    time.sleep(0.01)
-
-                self.master_screen.withdraw()
-                logger.info("Snipping tool window successfully hidden")
-        except Exception as e:
-            logger.exception(f"Error hiding snipping tool window: {e}")
-        finally:
-            self.is_window_open = False
-
     def initialize(self) -> None:
         """Create a fullscreen canvas for screenshot selection"""
-        if self.is_window_open:
+        if self.is_window_displayed:
             logger.warning("Snipping tool already open")
             return
 
@@ -135,25 +113,55 @@ class TkinterSnippingTool(SnippingToolBase):
         """Show the snipping tool window when needed"""
         logger.debug("Attempting to show the snipping tool window")
 
-        # Clear canvas
-        try:
-            self.snip_surface.delete("all")
-        except Exception as e:
-            logger.exception(f"Error clearing the `snip_surface` canvas: {e}")
+        if not self.is_window_displayed:
+            # Clear canvas
+            try:
+                self.snip_surface.delete("all")
+            except Exception as e:
+                logger.exception(f"Error clearing the `snip_surface` canvas: {e}")
 
-        self.master_screen.wm_attributes("-alpha", 0)
-        self.master_screen.deiconify()
+            self.master_screen.wm_attributes("-alpha", 0)
+            self.master_screen.deiconify()
+            self.master_screen.focus_set()
 
-        # Animate window
-        for i in range(1, self.alpha_cycles + 1):
-            self.alpha = self.alpha_increment * i
-            self.master_screen.wm_attributes("-alpha", self.alpha)
-            self.master_screen.update()
+            # Animate window
+            for i in range(1, self.alpha_cycles + 1):
+                self.alpha = self.alpha_increment * i
+                self.master_screen.wm_attributes("-alpha", self.alpha)
+                self.master_screen.update()
 
-            time.sleep(0.01)
+                time.sleep(0.01)
 
-        self.is_window_open = True
-        logger.info("Snipping tool window successfully displayed")
+            self.is_window_displayed = True
+            logger.info("The snipping tool window was successfully shown")
+        else:
+            logger.warning("The snipping tool window is already shown")
+
+    def hide_window(self, event: tk.Event = None) -> None:
+        """Hide the snipping tool window"""
+        logger.debug("Attempting to hide the snipping tool window")
+
+        if self.is_window_displayed:
+            try:
+                if self.master_screen and self.master_screen.winfo_exists():
+                    self.is_window_displayed = False
+
+                    # Animate window
+                    for i in range(1, self.alpha_cycles + 1):
+                        self.alpha = self.alpha_increment * (self.alpha_cycles - i)
+                        self.master_screen.wm_attributes("-alpha", self.alpha)
+                        self.master_screen.update()
+
+                        time.sleep(0.01)
+
+                    self.master_screen.withdraw()
+                    logger.info("The snipping tool window was successfully hidden")
+            except Exception as e:
+                logger.exception(f"Error hiding the snipping tool window: {e}")
+            finally:
+                self.is_window_displayed = False
+        else:
+            logger.warning("The snipping tool window is already hidden")
 
     def on_button_press(self, event: tk.Event) -> None:
         """Handle mouse button press for selecting screenshot area"""
