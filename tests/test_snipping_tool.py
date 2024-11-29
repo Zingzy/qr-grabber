@@ -32,7 +32,7 @@ def test_initial_state(snipping_tool):
     assert snipping_tool.master_screen is None
     assert snipping_tool.start_x is None
     assert snipping_tool.start_y is None
-    assert not snipping_tool.is_window_open
+    assert not snipping_tool.is_window_displayed
 
 
 def test_show_window(snipping_tool, mock_dependencies):
@@ -43,12 +43,14 @@ def test_show_window(snipping_tool, mock_dependencies):
 
     snipping_tool.show_window()
 
-    # Verify the window was deiconified and in the right state
+    # Verify that the window was deiconified and in the right state
     assert snipping_tool.master_screen.update.call_count == 30  # alpha_cycles
-    assert snipping_tool.master_screen.wm_attributes.call_count == 31  # alpha_cycles + 1
+    assert (
+        snipping_tool.master_screen.wm_attributes.call_count == 31
+    )  # alpha_cycles + 1
     snipping_tool.master_screen.deiconify.assert_called_once()
     assert snipping_tool.alpha == 0.3  # max_alpha
-    assert snipping_tool.is_window_open
+    assert snipping_tool.is_window_displayed
 
 
 def test_hide_window(snipping_tool, mock_dependencies):
@@ -56,15 +58,16 @@ def test_hide_window(snipping_tool, mock_dependencies):
     # Create a mock Tk window
     snipping_tool.master_screen = MagicMock()
     snipping_tool.master_screen.winfo_exists.return_value = True
+    snipping_tool.is_window_displayed = True
 
     snipping_tool.hide_window()
 
-    # Verify the window was withdrawn and in the right state
+    # Verify that the window was withdrawn and in the right state
     assert snipping_tool.master_screen.update.call_count == 30  # alpha_cycles
     assert snipping_tool.master_screen.wm_attributes.call_count == 30  # alpha_cycles
     snipping_tool.master_screen.withdraw.assert_called_once()
     assert snipping_tool.alpha == 0
-    assert not snipping_tool.is_window_open
+    assert not snipping_tool.is_window_displayed
 
 
 def test_hide_window_no_existing_window(snipping_tool):
