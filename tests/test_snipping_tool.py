@@ -12,6 +12,7 @@ def mock_dependencies():
         "screenshot_service": MagicMock(),
         "clipboard_service": MagicMock(),
         "notification_service": MagicMock(),
+        "icon_path": MagicMock(),
     }
 
 
@@ -23,6 +24,7 @@ def snipping_tool(mock_dependencies):
         screenshot_service=mock_dependencies["screenshot_service"],
         clipboard_service=mock_dependencies["clipboard_service"],
         notification_service=mock_dependencies["notification_service"],
+        icon_path=mock_dependencies["icon_path"],
     )
 
 
