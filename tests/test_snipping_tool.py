@@ -41,9 +41,13 @@ def test_show_window(snipping_tool, mock_dependencies):
     snipping_tool.master_screen = MagicMock()
     snipping_tool.master_screen.winfo_exists.return_value = True
 
+    # Create a mock Canvas widget
+    snipping_tool.snip_surface = MagicMock()
+
     snipping_tool.show_window()
 
     # Verify that the window was deiconified and in the right state
+    snipping_tool.snip_surface.delete.assert_called_once_with('all')
     assert snipping_tool.master_screen.update.call_count == 30  # alpha_cycles
     assert (
         snipping_tool.master_screen.wm_attributes.call_count == 31
