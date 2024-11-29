@@ -12,6 +12,7 @@ from src.services.clipboard_service import ClipboardService
 from src.services.notification_service import NotificationService
 from src.utils import assets
 
+
 class SnippingToolBase:
     """Abstract base class for snipping tool"""
 
