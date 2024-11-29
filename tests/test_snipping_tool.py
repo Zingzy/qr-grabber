@@ -32,36 +32,62 @@ def test_initial_state(snipping_tool):
     assert snipping_tool.master_screen is None
     assert snipping_tool.start_x is None
     assert snipping_tool.start_y is None
-    assert not snipping_tool.is_window_open
+    assert not snipping_tool.is_window_displayed
 
 
-def test_exit_program(snipping_tool, mock_dependencies):
-    """Test the exit_program method"""
+def test_show_window(snipping_tool, mock_dependencies):
+    """Test the show_window method"""
     # Create a mock Tk window
     snipping_tool.master_screen = MagicMock()
     snipping_tool.master_screen.winfo_exists.return_value = True
 
-    snipping_tool.exit_program()
+    # Create a mock Canvas widget
+    snipping_tool.snip_surface = MagicMock()
 
-    # Verify the window was destroyed and state was reset
-    snipping_tool.master_screen.destroy.assert_called_once()
-    assert not snipping_tool.is_window_open
+    snipping_tool.show_window()
+
+    # Verify that the window was deiconified and in the right state
+    snipping_tool.snip_surface.delete.assert_called_once_with("all")
+    assert snipping_tool.master_screen.update.call_count == 30  # alpha_cycles
+    assert (
+        snipping_tool.master_screen.wm_attributes.call_count == 31
+    )  # alpha_cycles + 1
+    snipping_tool.master_screen.deiconify.assert_called_once()
+    assert snipping_tool.alpha == 0.3  # max_alpha
+    assert snipping_tool.is_window_displayed
 
 
-def test_exit_program_no_existing_window(snipping_tool):
-    """Test exit_program when no window exists"""
+def test_hide_window(snipping_tool, mock_dependencies):
+    """Test the hide_window method"""
+    # Create a mock Tk window
+    snipping_tool.master_screen = MagicMock()
+    snipping_tool.master_screen.winfo_exists.return_value = True
+    snipping_tool.is_window_displayed = True
+
+    snipping_tool.hide_window()
+
+    # Verify that the window was withdrawn and in the right state
+    assert snipping_tool.master_screen.update.call_count == 30  # alpha_cycles
+    assert snipping_tool.master_screen.wm_attributes.call_count == 30  # alpha_cycles
+    snipping_tool.master_screen.withdraw.assert_called_once()
+    assert snipping_tool.alpha == 0
+    assert not snipping_tool.is_window_displayed
+
+
+def test_hide_window_no_existing_window(snipping_tool):
+    """Test hide_window when no window exists"""
     snipping_tool.master_screen = None
 
     try:
-        snipping_tool.exit_program()
+        snipping_tool.hide_window()
     except Exception as e:
-        pytest.fail(f"exit_program raised an unexpected exception: {e}")
+        pytest.fail(f"hide_window raised an unexpected exception: {e}")
 
 
 @pytest.mark.skipif(reason="Fails because physical window gets created")
 @patch("tkinter.Canvas")
 @patch("tkinter.Tk")
-def test_create_screen_canvas(mock_tk_class, mock_canvas_class, snipping_tool):
+def test_initialize(mock_tk_class, mock_canvas_class, snipping_tool):
     # Setup mock Tk instance
     mock_tk = Mock()
     mock_tk_class.return_value = mock_tk
@@ -73,17 +99,15 @@ def test_create_screen_canvas(mock_tk_class, mock_canvas_class, snipping_tool):
     mock_canvas_class.return_value = mock_canvas
 
     # Call the method
-    snipping_tool.create_screen_canvas()
+    snipping_tool.initialize()
 
     # Verify Tk window setup
     mock_tk.attributes.assert_any_call("-transparent", "blue")
-    mock_tk.attributes.assert_any_call("-alpha", 0.3)
     mock_tk.attributes.assert_any_call("-topmost", True)
     mock_tk.attributes.assert_any_call("-fullscreen", True)
-    assert not snipping_tool.is_window_open
 
     # Verify Canvas setup
-    mock_canvas_class.assert_called_once_with(mock_tk, cursor="cross", bg="grey18")
+    mock_canvas_class.assert_called_once_with(mock_tk, cursor="crosshair", bg="grey18")
     mock_canvas.pack.assert_called_once()
 
     # Verify event bindings
@@ -92,7 +116,7 @@ def test_create_screen_canvas(mock_tk_class, mock_canvas_class, snipping_tool):
     mock_canvas.bind.assert_any_call(
         "<ButtonRelease-1>", snipping_tool.on_button_release
     )
-    mock_canvas.bind.assert_any_call("<Escape>", snipping_tool.exit_program)
+    mock_canvas.bind.assert_any_call("<Escape>", snipping_tool.hide_window)
 
 
 def test_on_button_press(snipping_tool):
@@ -107,6 +131,9 @@ def test_on_button_press(snipping_tool):
     event.y = 200
 
     snipping_tool.on_button_press(event)
+
+    # Check if the cursor moved
+    assert not snipping_tool.cursor_moved
 
     # Verify start coordinates and rectangle creation
     assert snipping_tool.start_x == 100
@@ -127,6 +154,9 @@ def test_on_snip_drag(snipping_tool):
     event.y = 250
 
     snipping_tool.on_snip_drag(event)
+
+    # Check if the cursor moved
+    assert snipping_tool.cursor_moved
 
     # Verify rectangle coordinates updated
     snipping_tool.snip_surface.coords.assert_called_with(

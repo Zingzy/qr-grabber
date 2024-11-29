@@ -1,32 +1,41 @@
 import tkinter as tk
-from tkinter import Tk, Canvas
+from tkinter import Tk, Canvas, PhotoImage
 from PIL import Image
 from loguru import logger
 from typing import Optional
 import abc
+import time
 
 from src.services.qr_processor import QRCodeProcessor
 from src.services.screenshot_service import ScreenshotCapture
 from src.services.clipboard_service import ClipboardService
 from src.services.notification_service import NotificationService
+from src.utils import assets
 
 
 class SnippingToolBase:
     """Abstract base class for snipping tool"""
 
     @abc.abstractmethod
-    def create_screen_canvas(self) -> None:
+    def initialize(self) -> None:
         """Create screen canvas for screenshot selection"""
         pass
 
     @abc.abstractmethod
-    def exit_program(self) -> None:
-        """Exit the snipping tool"""
+    def hide_window(self) -> None:
+        """Hide the snipping tool window"""
         pass
 
 
 class TkinterSnippingTool(SnippingToolBase):
     """Tkinter-based implementation of snipping tool"""
+
+    is_window_displayed = False
+
+    # Animation configuration
+    max_alpha = 0.3
+    alpha_increment = 0.01
+    alpha_cycles = int(max_alpha / alpha_increment)
 
     def __init__(
         self,
@@ -42,7 +51,8 @@ class TkinterSnippingTool(SnippingToolBase):
         self.current_x: Optional[int] = None
         self.current_y: Optional[int] = None
         self.rect: Optional[int] = None
-        self.is_window_open: bool = False
+        self.is_window_displayed: bool = False
+        self.cursor_moved: bool = False
 
         # Dependency injection
         self.qr_processor: QRCodeProcessor = qr_processor
@@ -50,62 +60,101 @@ class TkinterSnippingTool(SnippingToolBase):
         self.clipboard_service: ClipboardService = clipboard_service
         self.notification_service: NotificationService = notification_service
 
-    def exit_program(self, event: tk.Event = None) -> None:
-        """Exit the snipping window"""
-        logger.debug("Attempting to exit snipping tool")
-        try:
-            if self.master_screen and self.master_screen.winfo_exists():
-                self.is_window_open = False
-                self.master_screen.destroy()
-                logger.info("Snipping tool closed successfully")
-        except Exception as e:
-            logger.exception(f"Error closing snipping tool: {e}")
-        finally:
-            self.is_window_open = False
-
-    def create_screen_canvas(self) -> None:
+    def initialize(self) -> None:
         """Create a fullscreen canvas for screenshot selection"""
-        if self.is_window_open:
+        if self.is_window_displayed:
             logger.warning("Snipping tool already open")
             return
 
         try:
-            logger.info("Opening snipping tool")
-            self.is_window_open = True
+            logger.info("Initializing snipping tool window")
             self.master_screen = Tk()
+            self.master_screen.title("QR Grabber Overlay")
+
+            app_icon = PhotoImage(file=assets.app_icon_png)
+            self.master_screen.iconphoto(True, app_icon)
+
             self.master_screen.attributes("-transparent", "blue")
             self.master_screen.geometry(
                 f"{self.master_screen.winfo_screenwidth()}x{self.master_screen.winfo_screenheight()}+0+0"
             )
-            self.master_screen.attributes("-alpha", 0.5)
-            self.master_screen.attributes("-topmost", True)
 
-            self.snip_surface = Canvas(self.master_screen, cursor="cross", bg="grey18")
+            self.snip_surface = Canvas(
+                self.master_screen, cursor="crosshair", bg="grey18"
+            )
             self.snip_surface.pack(fill=tk.BOTH, expand=tk.YES)
 
             self.snip_surface.bind("<ButtonPress-1>", self.on_button_press)
             self.snip_surface.bind("<B1-Motion>", self.on_snip_drag)
             self.snip_surface.bind("<ButtonRelease-1>", self.on_button_release)
-            self.snip_surface.bind("<Escape>", self.exit_program)
-            self.master_screen.bind("<Escape>", self.exit_program)
-            self.master_screen.focus_force()  # Force focus on the window
+            self.snip_surface.bind("<Escape>", self.hide_window)
+            self.master_screen.bind("<Escape>", self.hide_window)
 
             self.master_screen.attributes("-fullscreen", True)
-            self.master_screen.attributes("-toolwindow", True)
-            self.master_screen.attributes("-alpha", 0.3)
-            self.master_screen.lift()
             self.master_screen.attributes("-topmost", True)
+            self.master_screen.withdraw()
 
-            self.master_screen.protocol("WM_DELETE_WINDOW", self.exit_program)
+            self.master_screen.protocol("WM_DELETE_WINDOW", self.hide_window)
             self.master_screen.mainloop()
         except Exception as e:
             logger.exception(f"Error creating screen canvas: {e}")
-            self.is_window_open = False
+
+    def show_window(self) -> None:
+        """Show the snipping tool window when needed"""
+        logger.debug("Attempting to show the snipping tool window")
+
+        if not self.is_window_displayed:
+            # Clear canvas
+            self.snip_surface.delete("all")
+
+            self.master_screen.wm_attributes("-alpha", 0)
+            self.master_screen.deiconify()
+            self.master_screen.focus_set()
+
+            # Animate window
+            for i in range(1, self.alpha_cycles + 1):
+                self.alpha = self.alpha_increment * i
+                self.master_screen.wm_attributes("-alpha", self.alpha)
+                self.master_screen.update()
+
+                time.sleep(0.01)
+
+            self.is_window_displayed = True
+            logger.info("Snipping tool window was successfully shown")
+        else:
+            logger.warning("Snipping tool window is already shown")
+
+    def hide_window(self, event: tk.Event = None) -> None:
+        """Hide the snipping tool window"""
+        logger.debug("Attempting to hide the snipping tool window")
+
+        if self.is_window_displayed:
+            try:
+                if self.master_screen and self.master_screen.winfo_exists():
+                    self.is_window_displayed = False
+
+                    # Animate window
+                    for i in range(1, self.alpha_cycles + 1):
+                        self.alpha = self.alpha_increment * (self.alpha_cycles - i)
+                        self.master_screen.wm_attributes("-alpha", self.alpha)
+                        self.master_screen.update()
+
+                        time.sleep(0.01)
+
+                    self.master_screen.withdraw()
+                    logger.info("Snipping tool window was successfully hidden")
+            except Exception as e:
+                logger.exception(f"Error hiding the snipping tool window: {e}")
+            finally:
+                self.is_window_displayed = False
+        else:
+            logger.warning("Snipping tool window is already hidden")
 
     def on_button_press(self, event: tk.Event) -> None:
         """Handle mouse button press for selecting screenshot area"""
         try:
             logger.debug("Button press detected for screenshot selection")
+            self.cursor_moved = False
             self.start_x = self.snip_surface.canvasx(event.x)
             self.start_y = self.snip_surface.canvasy(event.y)
             self.rect = self.snip_surface.create_rectangle(
@@ -123,6 +172,7 @@ class TkinterSnippingTool(SnippingToolBase):
     def on_snip_drag(self, event: tk.Event) -> None:
         """Update rectangle during mouse drag"""
         try:
+            self.cursor_moved = True
             self.current_x, self.current_y = (event.x, event.y)
             self.snip_surface.coords(
                 self.rect, self.start_x, self.start_y, self.current_x, self.current_y
@@ -146,18 +196,27 @@ class TkinterSnippingTool(SnippingToolBase):
 
             logger.info(f"Screenshot selection: {left},{top} {width}x{height}")
 
-            screenshot: Optional[Image.Image] = (
-                self.screenshot_service.take_bounded_screenshot(
-                    left, top, width, height
+            if not (width < 40 or height < 40):
+                screenshot: Optional[Image.Image] = (
+                    self.screenshot_service.take_bounded_screenshot(
+                        left, top, width, height
+                    )
                 )
-            )
-            # if screenshot:
-            #     screenshot.show()  # Display the screenshot for debugging
-            self.exit_program()
-            self.process_screenshot(screenshot)
+                # if screenshot:
+                #     screenshot.show()  # Display the screenshot for debugging
+                self.hide_window()
+                self.process_screenshot(screenshot)
+            else:
+                if self.cursor_moved:
+                    self.snip_surface.delete("all")
+                    logger.warning("The selected area is too small")
+                else:
+                    # Close if the user only clicks and doesn't select anything.
+                    logger.warning("No selection made, closing")
+                    self.hide_window()
         except Exception as e:
             logger.exception(f"Error during button release: {e}")
-            self.exit_program()
+            self.hide_window()
 
     def process_screenshot(self, image: Optional[Image.Image]) -> None:
         """Process detected screenshot for QR code"""
