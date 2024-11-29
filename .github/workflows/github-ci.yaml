@@ -16,7 +16,7 @@ on:
 jobs:
   tests:
     name: pytest on ${{ matrix.python-version }}
-    runs-on: ubuntu-20.04
+    runs-on: windows-latest
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
@@ -38,21 +38,12 @@ jobs:
     - name: Install dependencies
       run: pip install -r requirements.txt
 
-    - name: Install xvfb
-      run: sudo apt-get install -y xvfb
-
-    - name: Install zbar
-      run: sudo apt-get install -y zbar-tools
-
-    - name: Run tests with xvfb
-      run: |
-        sudo Xvfb :99 -ac &
-        export DISPLAY=:99
-        pytest -vv
+    - name: Run tests
+      run: pytest -vv
 
   codestyle:
     name: Check code style issues
-    runs-on: ubuntu-20.04
+    runs-on: windows-latest
 
     steps:
     - name: Checkout Code
