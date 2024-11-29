@@ -10,7 +10,6 @@ from src.services.qr_processor import QRCodeProcessor
 from src.services.screenshot_service import ScreenshotCapture
 from src.services.clipboard_service import ClipboardService
 from src.services.notification_service import NotificationService
-from src.utils import assets
 
 
 class SnippingToolBase:
@@ -43,6 +42,7 @@ class TkinterSnippingTool(SnippingToolBase):
         screenshot_service: ScreenshotCapture,
         clipboard_service: ClipboardService,
         notification_service: NotificationService,
+        icon_path: str,
     ):
         self.snip_surface: Optional[Canvas] = None
         self.master_screen: Optional[Tk] = None
@@ -53,6 +53,7 @@ class TkinterSnippingTool(SnippingToolBase):
         self.rect: Optional[int] = None
         self.is_window_displayed: bool = False
         self.cursor_moved: bool = False
+        self.icon_path: str = icon_path
 
         # Dependency injection
         self.qr_processor: QRCodeProcessor = qr_processor
@@ -71,7 +72,7 @@ class TkinterSnippingTool(SnippingToolBase):
             self.master_screen = Tk()
             self.master_screen.title("QR Grabber Overlay")
 
-            app_icon = PhotoImage(file=assets.app_icon_png)
+            app_icon = PhotoImage(file=self.icon_path)
             self.master_screen.iconphoto(True, app_icon)
 
             self.master_screen.attributes("-transparent", "blue")
