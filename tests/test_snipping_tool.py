@@ -44,10 +44,10 @@ def test_show_window(snipping_tool, mock_dependencies):
     snipping_tool.show_window()
 
     # Verify the window was deiconified and in the right state
-    assert snipping_tool.master_screen.update.call_count == int(0.3 / 0.01)
-    assert snipping_tool.master_screen.wm_attributes.call_count == int(0.3 / 0.01) + 1
+    assert snipping_tool.master_screen.update.call_count == 30  # alpha_cycles
+    assert snipping_tool.master_screen.wm_attributes.call_count == 31  # alpha_cycles + 1
     snipping_tool.master_screen.deiconify.assert_called_once()
-    assert snipping_tool.alpha == 0.3
+    assert snipping_tool.alpha == 0.3  # max_alpha
     assert snipping_tool.is_window_open
 
 
@@ -60,8 +60,8 @@ def test_hide_window(snipping_tool, mock_dependencies):
     snipping_tool.hide_window()
 
     # Verify the window was withdrawn and in the right state
-    assert snipping_tool.master_screen.update.call_count == int(0.3 / 0.01)
-    assert snipping_tool.master_screen.wm_attributes.call_count == int(0.3 / 0.01)
+    assert snipping_tool.master_screen.update.call_count == 30  # alpha_cycles
+    assert snipping_tool.master_screen.wm_attributes.call_count == 30  # alpha_cycles
     snipping_tool.master_screen.withdraw.assert_called_once()
     assert snipping_tool.alpha == 0
     assert not snipping_tool.is_window_open

@@ -42,6 +42,11 @@ class TkinterSnippingTool(SnippingToolBase):
 
     is_window_open = False
 
+    # Animation configuration
+    max_alpha = 0.3
+    alpha_increment = 0.01
+    alpha_cycles = int(max_alpha / alpha_increment)
+
     def __init__(
         self,
         qr_processor: QRCodeProcessor,
@@ -73,8 +78,8 @@ class TkinterSnippingTool(SnippingToolBase):
                 self.is_window_open = False
 
                 # Animate window
-                for i in range(1, int(0.3 / 0.01) + 1):
-                    self.alpha = 0.01 * (30 - i)
+                for i in range(1, self.alpha_cycles + 1):
+                    self.alpha = self.alpha_increment * (self.alpha_cycles - i)
                     self.master_screen.wm_attributes("-alpha", self.alpha)
                     self.master_screen.update()
 
@@ -140,8 +145,8 @@ class TkinterSnippingTool(SnippingToolBase):
         self.master_screen.deiconify()
 
         # Animate window
-        for i in range(1, int(0.3 / 0.01) + 1):
-            self.alpha = 0.01 * i
+        for i in range(1, self.alpha_cycles + 1):
+            self.alpha = self.alpha_increment * i
             self.master_screen.wm_attributes("-alpha", self.alpha)
             self.master_screen.update()
 
