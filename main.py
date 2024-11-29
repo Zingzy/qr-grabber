@@ -7,10 +7,10 @@ from src.ui.snipping_tool import TkinterSnippingTool
 from src.ui.tray_icon import TrayIconManager
 from src.utils.exceptions import handle_exception
 from src.utils.startup_manager import set_startup_registry, is_startup_enabled
+from src.utils import assets
 import threading
 import sys
 import keyboard
-import os
 
 # Setup logging at module import
 logger = setup_logging()
@@ -26,7 +26,7 @@ class QRCodeDetectionApp:
         self.qr_processor: QRCodeProcessor = QRCodeProcessor()
         self.clipboard_service: ClipboardService = ClipboardService()
         self.notification_service: NotificationService = NotificationService(
-            app_icon=self.get_asset_path("assets/icon.ico")
+            app_icon=assets.app_icon_ico
         )
 
         # Create components
@@ -40,7 +40,7 @@ class QRCodeDetectionApp:
             self.snipping_tool.show_window,
             set_startup_registry,
             is_startup_enabled,
-            self.get_asset_path("assets/icon.ico"),
+            assets.app_icon_ico,
         )
 
         # Initialize snipping tool window
@@ -60,14 +60,6 @@ class QRCodeDetectionApp:
             self.tray_icon_manager.create_tray_icon()
         except Exception as e:
             logger.exception(f"Error setting up application: {e}")
-
-    def get_asset_path(self, relative_path):
-        """Get the absolute path to an asset, handling PyInstaller paths."""
-        if getattr(sys, "frozen", False):  # If running as a PyInstaller EXE
-            base_path = sys._MEIPASS
-        else:  # If running in development
-            base_path = os.path.dirname(__file__)
-        return os.path.join(base_path, relative_path)
 
     def run(self) -> None:
         """Start the application"""
