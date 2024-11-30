@@ -28,10 +28,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Generate version file
-        run: |
-          version=${{ github.event.release.tag_name }}
-          version=${version#v}
-          python version.py $version
+        run: python version.py ${{ github.event.release.tag_name }}
 
       - name: Build executable
         run: |
