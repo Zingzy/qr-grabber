@@ -10,7 +10,7 @@ def main():
     args = parser.parse_args()
 
     # Remove leading 'v' if present
-    version = args.version.lstrip('v')
+    version = args.version.lstrip("v")
 
     pyinstaller_versionfile.create_versionfile(
         output_file="versionfile.txt",
