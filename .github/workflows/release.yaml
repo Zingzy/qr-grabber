@@ -9,50 +9,53 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-    - name: Install UPX using Chocolatey
-      run: |
-        choco install upx -y
-        echo "UPX_DIR=C:\Program Files\upx" >> $env:GITHUB_ENV
+      - name: Install UPX using Chocolatey
+        run: |
+          choco install upx -y
+          echo "UPX_DIR=C:\Program Files\upx" >> $env:GITHUB_ENV
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pyinstaller pyinstaller_versionfile
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller pyinstaller_versionfile
+          pip install -r requirements.txt
 
-    - name: Generate version file
-      run: python version.py ${{ github.event.release.tag_name }}
+      - name: Generate version file
+        run: |
+          version=${{ github.event.release.tag_name }}
+          version=${version#v}
+          python version.py $version
 
-    - name: Build executable
-      run: |
-        pyinstaller --noconfirm --onefile --windowed `
-          --icon="assets/icon.ico" `
-          --name="qr-grabber" `
-          --optimize=2 `
-          --upx-dir="$env:UPX_DIR" `
-          --version-file="versionfile.txt" `
-          --add-data="assets;assets" `
-          --hidden-import="plyer.platforms.win.notification" `
-          --additional-hooks-dir="hooks" `
-          --exclude-module="cv2" `
-          main.py
+      - name: Build executable
+        run: |
+          pyinstaller --noconfirm --onefile --windowed `
+            --icon="assets/icon.ico" `
+            --name="qr-grabber" `
+            --optimize=2 `
+            --upx-dir="$env:UPX_DIR" `
+            --version-file="versionfile.txt" `
+            --add-data="assets;assets" `
+            --hidden-import="plyer.platforms.win.notification" `
+            --additional-hooks-dir="hooks" `
+            --exclude-module="cv2" `
+            main.py
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: qr-grabber-${{ github.event.release.tag_name }}-win64
-        path: dist/qr-grabber.exe
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: qr-grabber-${{ github.event.release.tag_name }}-win64
+          path: dist/qr-grabber.exe
 
-    - name: Upload to release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: dist/qr-grabber.exe
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/qr-grabber.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
